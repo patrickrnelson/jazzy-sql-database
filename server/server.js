@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const pg = require('pg');
+const pool = require('./modules/pool');
 
 const app = express();
 const PORT = 5000;
@@ -12,105 +12,8 @@ app.listen(PORT, () => {
   console.log('listening on port', PORT);
 });
 
-// Create a connection to our database
-const pool = new pg.Pool({
-  database: 'jazzy_sql',
-});
+let artistRouter = require('./routes/artist_router');
+app.use('/artist', artistRouter);
 
-// TODO - Replace static content with a database tables
-
-app.get('/artist', (req, res) => {
-  console.log(`In /artist GET`);
-  pool
-    .query(
-      `
-    SELECT * FROM "artists"
-    ORDER BY "birthday" ASC;
-    `
-    )
-    .then(function (dbRes) {
-      res.send(dbRes.rows);
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.sendStatus(500);
-    });
-});
-
-/* 
-/artist POST should look like....
-
-INSERT INTO "artists"
-  ("name", "birthday")
-VALUES 
-  ('SOMEBODY', 'SOME BDAY');
-
-*/
-
-app.post('/artist', (req, res) => {
-  console.log('req.body', req.body);
-  pool
-    .query(
-      `
-  INSERT INTO "artists"
-    ("name", "birthday")
-  VALUES
-    ('${req.body.name}', '${req.body.birthdate}');
-  `
-    )
-    .then(function (dbRes) {
-      res.sendStatus(201);
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.sendStatus(500);
-    });
-});
-
-app.get('/song', (req, res) => {
-  console.log(`In /songs GET`);
-  pool
-    .query(
-      `
-    SELECT * FROM "songs"
-    ORDER BY "title" ASC;
-    `
-    )
-    .then(function (dbRes) {
-      res.send(dbRes.rows);
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.sendStatus(500);
-    });
-});
-
-/* 
-/songs POST should look like....
-
-INSERT INTO "songs"
-  ("title", "length", "release")
-VALUES 
-  ('SOME SONG', 'SOME LENGTH', 'SOME DATE');
-
-*/
-
-app.post('/song', (req, res) => {
-  // console.log('req.body', req.body);
-  pool
-    .query(
-      `
-    INSERT INTO "songs"
-      ("title", "length", "release")
-    VALUES
-      ('${req.body.title}', '${req.body.length}', '${req.body.released}');
-  `
-    )
-    .then(function (dbRes) {
-      res.sendStatus(201);
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.sendStatus(500);
-    });
-});
+let songRouter = require('./routes/song_router');
+app.use('/song', songRouter);
