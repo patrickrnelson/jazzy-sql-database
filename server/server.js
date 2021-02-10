@@ -42,6 +42,7 @@ app.get('/artist', (req, res) => {
   pool
     .query(`SELECT * FROM "artists"`)
     .then(function (dbRes) {
+      console.log(dbRes);
       res.send(dbRes.rows);
     })
     .catch(function (err) {
