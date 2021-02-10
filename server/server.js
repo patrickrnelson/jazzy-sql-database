@@ -40,7 +40,12 @@ const songList = [
 app.get('/artist', (req, res) => {
   console.log(`In /artist GET`);
   pool
-    .query(`SELECT * FROM "artists"`)
+    .query(
+      `
+    SELECT * FROM "artists"
+    ORDER BY "birthday" ASC;
+    `
+    )
     .then(function (dbRes) {
       console.log(dbRes);
       res.send(dbRes.rows);
