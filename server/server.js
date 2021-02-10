@@ -47,7 +47,6 @@ app.get('/artist', (req, res) => {
     `
     )
     .then(function (dbRes) {
-      console.log(dbRes);
       res.send(dbRes.rows);
     })
     .catch(function (err) {
@@ -56,9 +55,34 @@ app.get('/artist', (req, res) => {
     });
 });
 
+/* 
+/artist POST should look like....
+
+INSERT INTO "artists"
+  ("name", "birthday")
+VALUES 
+  ('SOMEBODY', 'SOME BDAY');
+
+*/
+
 app.post('/artist', (req, res) => {
-  artistList.push(req.body);
-  res.sendStatus(201);
+  console.log('req.body', req.body);
+  pool
+    .query(
+      `
+  INSERT INTO "artists"
+    ("name", "birthday")
+  VALUES
+    ('${req.body.name}', '${req.body.birthdate}');
+  `
+    )
+    .then(function (dbRes) {
+      res.sendStatus(201);
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.sendStatus(500);
+    });
 });
 
 app.get('/song', (req, res) => {
